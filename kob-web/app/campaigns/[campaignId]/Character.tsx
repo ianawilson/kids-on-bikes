@@ -9,6 +9,12 @@ import { DebounceById, Debouncer } from '@/app/util';
 import { Search, SearchHelper } from '@/app/Search';
 import Delete from '@/app/Delete';
 
+export type StrengthDetails = {
+    key: string;
+    name: string;
+    description: string;
+}
+
 export type Character = {
     id?: number;
     campaignId?: number;
@@ -33,6 +39,12 @@ export type Character = {
     statFightModifier?: number;
     statFlightModifier?: number;
     statGritModifier?: number;
+    strengthFree?: string;
+    strength1?: string;
+    strength2?: string;
+    strengthFreeDetails?: StrengthDetails;
+    strength1Details?: StrengthDetails;
+    strength2Details?: StrengthDetails;
     adversityTokens?: number | null;
     _persistedRelationships?: Array<PersistedRelationship>
     relationships?: Array<Relationship>;
@@ -62,6 +74,12 @@ export type ApiCharacter = {
     stat_fight_modifier?: number;
     stat_flight_modifier?: number;
     stat_grit_modifier?: number;
+    strength_free?: string;
+    strength_1?: string;
+    strength_2?: string;
+    strength_free_details?: StrengthDetails;
+    strength_1_details?: StrengthDetails;
+    strength_2_details?: StrengthDetails;
     adversity_tokens?: number | null;
     relationships?: Array<ApiRelationship>;
 }
@@ -84,6 +102,8 @@ export function toApiCharacter(c: Character): ApiCharacter {
         stat_fight: c.statFight,
         stat_flight: c.statFlight,
         stat_grit: c.statGrit,
+        strength_1: c.strength1,
+        strength_2: c.strength2,
         adversity_tokens: c.adversityTokens,
     }
 }
@@ -113,6 +133,12 @@ export function fromApiCharacter(c: ApiCharacter): Character {
         statFightModifier: c.stat_fight_modifier,
         statFlightModifier: c.stat_flight_modifier,
         statGritModifier: c.stat_grit_modifier,
+        strengthFree: c.strength_free,
+        strength1: c.strength_1,
+        strength2: c.strength_2,
+        strengthFreeDetails: c.strength_free_details,
+        strength1Details: c.strength_1_details,
+        strength2Details: c.strength_2_details,
         adversityTokens: c.adversity_tokens,
         _persistedRelationships: c.relationships?.map(fromApiRelationship),
     }
@@ -409,7 +435,7 @@ export function CharacterSubtitle({ character }: { character: Character }) {
 function CharacterDescriptor({ name, value }: { name: string, value: string }) {
     return (
         <div>
-            <p><span className="float-lefts text-lg font-semibold">{name}:</span> {value}</p>
+            <p><span className="text-lg font-semibold">{name}:</span> {value}</p>
         </div>
     )
 }
@@ -423,6 +449,16 @@ export function CharacterStats({ character }: { character: Character }) {
             <Die name="Fight" stat={character.statFight} statModifier={character.statFightModifier} />
             <Die name="Flight" stat={character.statFlight} statModifier={character.statFlightModifier} />
             <Die name="Grit" stat={character.statGrit} statModifier={character.statGritModifier} />
+        </div>
+    )
+}
+
+function Strength({ strength }: {strength: StrengthDetails }) {
+    return (
+        <div>
+            <p>
+                <span className="font-semibold">{strength.name}:</span> {strength.description}
+            </p>
         </div>
     )
 }
@@ -516,7 +552,14 @@ export function CharacterSheet(props: { character: Character }) {
                     {character.motivation !== undefined && (<CharacterDescriptor name="Motivation" value={character.motivation} />)}
                     {character.flaws !== undefined && (<CharacterDescriptor name="Flaws" value={character.flaws} />)}
                     {character.description !== undefined && (<CharacterDescriptor name="Description" value={character.description} />)}
-                    <div>STRENGHTS TODO</div>
+                    <div>
+                        <div className="text-lg font-semibold">Strengths</div>
+                        <div className="pl-4 flex flex-col gap-2">
+                        {character.strengthFreeDetails && (<Strength strength={character.strengthFreeDetails} />)}
+                        {character.strength1Details && (<Strength strength={character.strength1Details} />)}
+                        {character.strength2Details && (<Strength strength={character.strength2Details} />)}
+                        </div>
+                    </div>
                 </div>
                 <div className="flex gap-2 flex-col shrink-0">
                     <CharacterStats character={character} />

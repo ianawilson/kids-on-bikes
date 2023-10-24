@@ -13,7 +13,7 @@ This is a rails and react toy app to manage Kids on Bikes campaigns.
     - [ ] Notes section
 - [ ] Character strengths
     - [ ] create / edit
-    - [ ] view
+    - [x] view
 - [ ] Location creation
 
 ### Enhancements and fixes
