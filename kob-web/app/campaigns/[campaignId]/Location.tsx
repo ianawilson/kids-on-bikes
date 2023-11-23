@@ -158,7 +158,14 @@ export async function deleteCharacterLocation(characterLocation: CharacterLocati
 export function LocationCard({location}: {location: CampaignLocation}) {
   return (
     <Card>
-      <Link href={`/campaigns/${location.campaignId}/locations/${location.id}`} className="text-2xl font-bold text-pink-700 hover:text-pink-600">{location.name}</Link>
+      <Link href={`/campaigns/${location.campaignId}/locations/${location.id}`} className="text-2xl font-bold text-pink-700 hover:text-pink-600">{location.name.length === 0 ? 'Unnamed location' : location.name}</Link>
+      <ul>
+        {location.characterLocations?.map((characterLocation) => {
+          return (
+            <li>{characterLocation.character?.name}</li>
+          )
+        })}
+      </ul>
     </Card>
   )
 }

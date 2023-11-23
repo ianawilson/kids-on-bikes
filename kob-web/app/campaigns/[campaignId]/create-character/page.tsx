@@ -24,7 +24,7 @@ export default function Page({ params }: { params: { campaignId: number }}) {
 
     return (
         <main className="min-h-screen">
-            <Link href={`/campaigns/${campaign?.id}`} className="block p-10 text-4xl font-bold text-purple-800 hover:text-purple-700 bg-purple-200">{campaign?.name ?? ''}</Link>
+            <Link href={`/campaigns/${campaign?.id}`} className="block p-10 text-4xl font-bold text-purple-800 hover:text-purple-600 bg-purple-200">{campaign?.name ?? ''}</Link>
             <div className="px-10 py-4 text-2xl font-bold text-purple-800 bg-purple-200">Create Character</div>
             <CreateCharacter postActionCallback={postActionCallback} campaign={campaign} />
         </main>

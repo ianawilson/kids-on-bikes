@@ -1,3 +1,17 @@
+AGE_GROUPS = {
+  kid: {
+    gte: 0,
+    lt: 14
+  },
+  teen: {
+    gte: 14,
+    lt: 20
+  },
+  adult: {
+    gte: 20
+  }
+}
+
 class Strength
   attr_reader :key
   attr_reader :name

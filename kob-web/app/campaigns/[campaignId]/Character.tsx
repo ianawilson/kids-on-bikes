@@ -1,19 +1,14 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Campaign } from '../Campaign';
 import Link from 'next/link';
 import Card from '@/app/Card';
 import Association from '@/app/Association';
-import { DebounceById, Debouncer } from '@/app/util';
+import { DebounceById } from '@/app/util';
 import { Search, SearchHelper } from '@/app/Search';
 import Delete from '@/app/Delete';
-
-export type StrengthDetails = {
-    key: string;
-    name: string;
-    description: string;
-}
+import { MetaContext, StrengthDetails, getFreeStrengthForAge } from '@/app/Meta';
 
 export type Character = {
     id?: number;
@@ -396,7 +391,7 @@ export function AdversityTokens({ character }: { character: Character}) {
     return (
         <label className="flex gap-1">
             <span className="font-semibold">Adversity Tokens:</span>
-            <input className="w-12 text-right" type="number" value={tokens ?? tokens.toString()} onChange={(e) => updateTokens(parseNumberOrEmpty(e.target.value))} />
+            <input className="w-12 text-right" type="number" value={tokens ?? ''} onChange={(e) => updateTokens(parseNumberOrEmpty(e.target.value))} />
         </label>
     )
 }
@@ -583,6 +578,7 @@ export function CharacterSheet(props: { character: Character }) {
 }
 
 function BaseCharacterForm(actionText: string, action: (character: Character) => Promise<Character>, postActionCallback: (character: Character) => void, campaign?: Campaign, character?: Character) {
+    const meta = useContext(MetaContext)
     const [campaignState, setCampaign] = React.useState<Campaign | undefined>(campaign)
     const [characterState, setCharacter] = React.useState<Character | undefined>(character)
 
@@ -600,6 +596,7 @@ function BaseCharacterForm(actionText: string, action: (character: Character) =>
     const [statFight, setStatFight] = React.useState<number | null | undefined>(character?.statFight)
     const [statFlight, setStatFlight] = React.useState<number | null | undefined>(character?.statFlight)
     const [statGrit, setStatGrit] = React.useState<number | null | undefined>(character?.statGrit)
+    const [strengths, setStrengths] = React.useState<Array<string>>([])
 
     // TODO: This seems like a mess
     useEffect(() => {
@@ -618,6 +615,15 @@ function BaseCharacterForm(actionText: string, action: (character: Character) =>
         setStatFlight(character?.statFlight)
         setStatGrit(character?.statGrit)    
     }, [character])
+
+    const freeStrength = getFreeStrengthForAge(age)
+    const handleStrengthChange = (key: string) => {
+        if (strengths.includes(key)) {
+            setStrengths(strengths.filter((k) => k !== key))
+        } else {
+            setStrengths(strengths.concat([key]))
+        }
+    }
 
     async function submit(e) {
         e.preventDefault()
@@ -642,6 +648,8 @@ function BaseCharacterForm(actionText: string, action: (character: Character) =>
             statFight,
             statFlight,
             statGrit,
+            strength1: strengths[0],
+            strength2: strengths[1],
         }).then(postActionCallback)
     }
 
@@ -701,6 +709,18 @@ function BaseCharacterForm(actionText: string, action: (character: Character) =>
                     <Stat name='Grit' value={statGrit} setValue={setStatGrit}></Stat>
                 </fieldset>
             </div>
+            <fieldset className="flex flex-col space-y-3">
+                {Object.values(meta.strengths).map((strength) => {
+                    const thisIsTheFreeStrength = freeStrength !== undefined && freeStrength.key === strength.key
+                    return (
+                        <label className="flex space-x-2">
+                            <input type="checkbox" disabled={thisIsTheFreeStrength} checked={thisIsTheFreeStrength || strengths.includes(strength.key)}
+                                onChange={(event) => handleStrengthChange(strength.key)} />
+                            <Strength strength={strength} />
+                        </label>
+                    )
+                })}
+            </fieldset>
             <button type="submit" className="px-3 py-2 bg-purple-600 rounded text-slate-100 hover:bg-purple-700">{actionText}</button>
         </form>
     )

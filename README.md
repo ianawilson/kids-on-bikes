@@ -12,9 +12,14 @@ This is a rails and react toy app to manage Kids on Bikes campaigns.
     - [x] Ability to add relationship
     - [ ] Notes section
 - [ ] Character strengths
-    - [ ] create / edit
+    - [x] create / edit
     - [x] view
-- [ ] Location creation
+    - [ ] BUG: strengths get weird with ages changing
+    - [ ] BUG: can select more than 2 strenghts
+- [ ] Associations
+    - [ ] BUG: Campaign list should only show Associations for this campaign
+    - [ ] Rename Location to Association, at least in UI
+    - [ ] Add Association type, eg, Place, Group, Family
 
 ### Enhancements and fixes
 
@@ -22,6 +27,8 @@ This is a rails and react toy app to manage Kids on Bikes campaigns.
 - [ ] GM vs player visibility
 - [ ] Prevent character relationships with self
 - [ ] Separate relationships bewteen PCs and NPCs ?
+- [ ] I think urls nested under campaigns (characters, locations) will allow GETs and PUTs across arbitrary campaign ids
+- [ ] Reskin "adversity tokens" as simply "tokens" so they can cover powered characters as well
 
 ### Cleanup
 

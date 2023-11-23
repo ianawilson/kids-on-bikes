@@ -1,11 +1,10 @@
 class LocationsController < ApplicationController
+  before_action :set_campaign
   before_action :set_location, only: %i[ show update destroy ]
 
   # GET /locations
   def index
-    @locations = Location.all
-
-    render json: @locations
+    render json: @campaign.locations.all, include: { :character_locations => { :include => :character } }
   end
 
   # GET /locations/1
@@ -15,10 +14,10 @@ class LocationsController < ApplicationController
 
   # POST /locations
   def create
-    @location = Location.new(location_params)
+    @location = @campaign.locations.build(location_params)
 
     if @location.save
-      render json: @location, status: :created, location: @location
+      render json: @location, status: :created, location: campaign_location_url(@campaign, @location)
     else
       render json: @location.errors, status: :unprocessable_entity
     end
@@ -39,6 +38,10 @@ class LocationsController < ApplicationController
   end
 
   private
+    def set_campaign
+      @campaign = Campaign.find(params[:campaign_id])
+    end
+
     # Use callbacks to share common setup or constraints between actions.
     def set_location
       @location = Location.find(params[:id])

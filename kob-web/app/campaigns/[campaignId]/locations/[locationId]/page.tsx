@@ -5,11 +5,13 @@ import { getCampaign } from "../../util";
 import { CampaignLocation, CharacterLocation, createCharacterLocation, deleteCharacterLocation, getCampaignLocation, updateCampaignLocation, updateCharacterLocation } from "../../Location";
 import { Campaign } from "@/app/campaigns/Campaign";
 import React, { useEffect } from "react";
-import { DebounceById, Debouncer, makeDebouncer } from "@/app/util";
+import { DebounceById, makeDebouncer } from "@/app/util";
 import { Character, CharacterCard, characterSearchToQueryable, characterSearchToResult, getCharacters } from "../../Character";
 import { Search, SearchHelper, SearchResult } from "@/app/Search";
 import Delete from "@/app/Delete";
 import Association from "@/app/Association";
+import EditableText from "@/app/EditableText";
+import Loading from "@/app/Loading";
 
 const debounceLocationUpdate = makeDebouncer()
 const debouncersForCharacterLocationUpdates = new DebounceById<CharacterLocation>()
@@ -37,6 +39,7 @@ function CharacterLocationAssociation({ characterLocation, removeFunc }: { chara
 }
 
 export default function Page({ params }: { params: { campaignId: number, locationId: number }}) {
+  const [loading, setLoading] = React.useState(true)
   const [campaign, setCampaign] = React.useState<Campaign>()
   const [location, setLocation] = React.useState<CampaignLocation>()
   const [allCampaignCharacters, setAllCampaignCharacters] = React.useState<Array<Character>>([])
@@ -45,13 +48,23 @@ export default function Page({ params }: { params: { campaignId: number, locatio
   const [locDescription, setLocDescription] = React.useState(location?.description)
 
   useEffect(() => {
-    getCampaign(params.campaignId).then(setCampaign)
-    getCampaignLocation(params.campaignId, params.locationId).then((location) => {
+    const campaignLoaded = getCampaign(params.campaignId).then(setCampaign)
+    const locationLoaded = getCampaignLocation(params.campaignId, params.locationId).then((location) => {
       setLocation(location)
       setLocDescription(location.description)
     })
-    getCharacters(params.campaignId).then(setAllCampaignCharacters)
+    const charactersLoaded = getCharacters(params.campaignId).then(setAllCampaignCharacters)
+    Promise.all([campaignLoaded, locationLoaded, charactersLoaded])
+      .then(() => setLoading(false))
   }, [])
+
+  const updateName = (value: string) => {
+    updateCampaignLocation({
+      id: location?.id,
+      campaignId: location?.campaignId,
+      name: value,
+    })
+  }
 
   const updateDescription = (value: string) => {
     setLocDescription(value)
@@ -77,11 +90,15 @@ export default function Page({ params }: { params: { campaignId: number, locatio
       .then(() => getCampaignLocation(params.campaignId, params.locationId))
       .then(setLocation)
   }
+
+  if (loading) {
+    return (<Loading />)
+  }
   
   return (
     <main className="min-h-screen">
-      <Link href={`/campaigns/${campaign?.id}`} className="block p-10 text-4xl font-bold text-purple-800 hover:text-purple-700 bg-purple-200">{campaign?.name ?? ''}</Link>
-      <div className="px-10 py-4 text-2xl font-bold text-purple-800 bg-purple-200">Location: {location?.name ?? ''}</div>
+      <Link href={`/campaigns/${campaign?.id}`} className="block p-10 text-4xl font-bold text-purple-800 hover:text-purple-600 bg-purple-200">{campaign.name}</Link>
+      <div className="px-10 py-4 text-2xl font-bold text-purple-800 bg-purple-200">Location: <EditableText className="hover:text-purple-600" initialValue={location.name.length === 0 ? 'Unnamed association' : location.name} saveCallback={updateName} /></div>
       <div className="px-10 py-4">
         <textarea className="w-full h-36 p-4" value={locDescription} onChange={(e) => updateDescription(e.target.value)} />
       </div>
