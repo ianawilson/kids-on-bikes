@@ -29,6 +29,12 @@ This is a rails and react toy app to manage Kids on Bikes campaigns.
 - [ ] Separate relationships bewteen PCs and NPCs ?
 - [ ] I think urls nested under campaigns (characters, locations) will allow GETs and PUTs across arbitrary campaign ids
 - [ ] Reskin "adversity tokens" as simply "tokens" so they can cover powered characters as well
+- [ ] Locations allow characters added more than once
+- [ ] Prevoiusly selected strengths missing from Character edit
+- [x] Description box is so tiny
+- [x] Newlines from description aren't used when displaying
+- [ ] Ability to delete characters, locations
+- [ ] EditableText blurs on "enter"
 
 ### Cleanup
 

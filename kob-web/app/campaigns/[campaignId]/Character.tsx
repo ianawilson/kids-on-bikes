@@ -429,8 +429,8 @@ export function CharacterSubtitle({ character }: { character: Character }) {
 
 function CharacterDescriptor({ name, value }: { name: string, value: string }) {
     return (
-        <div>
-            <p><span className="text-lg font-semibold">{name}:</span> {value}</p>
+        <div className="">
+            <span className="text-lg font-semibold">{name}:</span> {value}
         </div>
     )
 }
@@ -546,19 +546,25 @@ export function CharacterSheet(props: { character: Character }) {
                     {character.fear !== undefined && (<CharacterDescriptor name="Fear" value={character.fear} />)}
                     {character.motivation !== undefined && (<CharacterDescriptor name="Motivation" value={character.motivation} />)}
                     {character.flaws !== undefined && (<CharacterDescriptor name="Flaws" value={character.flaws} />)}
-                    {character.description !== undefined && (<CharacterDescriptor name="Description" value={character.description} />)}
-                    <div>
-                        <div className="text-lg font-semibold">Strengths</div>
-                        <div className="pl-4 flex flex-col gap-2">
-                        {character.strengthFreeDetails && (<Strength strength={character.strengthFreeDetails} />)}
-                        {character.strength1Details && (<Strength strength={character.strength1Details} />)}
-                        {character.strength2Details && (<Strength strength={character.strength2Details} />)}
-                        </div>
-                    </div>
                 </div>
                 <div className="flex gap-2 flex-col shrink-0">
                     <CharacterStats character={character} />
                     {character.isPlayer ? (<AdversityTokens character={character} />) : null}
+                </div>
+            </div>
+            {(character.description !== undefined) ? (
+                <div className="flex flex-col gap-1">
+                    <div className="text-lg font-semibold">Description:</div>
+                    <div className="pl-6 whitespace-pre-wrap">{character.description}</div>
+                </div>
+            ) : null}
+
+            <div className="">
+                <div className="text-lg font-semibold">Strengths</div>
+                <div className="pl-6 flex flex gap-2">
+                    {character.strengthFreeDetails && (<Strength strength={character.strengthFreeDetails} />)}
+                    {character.strength1Details && (<Strength strength={character.strength1Details} />)}
+                    {character.strength2Details && (<Strength strength={character.strength2Details} />)}
                 </div>
             </div>
             <div>NOTES TODO</div>
@@ -694,11 +700,6 @@ function BaseCharacterForm(actionText: string, action: (character: Character) =>
                         <input className="p-2 rounded" name="flaws" placeholder="Flaws"
                             value={flaws} onChange={(event) => setFlaws(event.target.value )} />
                     </label>
-                    <label>
-                        <div className="text-xl font-bold my-1">Description</div>
-                        <textarea className="p-2 rounded" name="description" placeholder="Description"
-                            value={description} onChange={(event) => setDescription(event.target.value )} />
-                    </label>
                 </fieldset>
                 <fieldset>
                     <Stat name='Brains' value={statBrains} setValue={setStatBrains}></Stat>
@@ -709,6 +710,11 @@ function BaseCharacterForm(actionText: string, action: (character: Character) =>
                     <Stat name='Grit' value={statGrit} setValue={setStatGrit}></Stat>
                 </fieldset>
             </div>
+            <label>
+                <div className="text-xl font-bold my-1">Description</div>
+                <textarea className="p-2 rounded w-full h-80" name="description" placeholder="Description"
+                    value={description} onChange={(event) => setDescription(event.target.value )} />
+            </label>
             <fieldset className="flex flex-col space-y-3">
                 {Object.values(meta.strengths).map((strength) => {
                     const thisIsTheFreeStrength = freeStrength !== undefined && freeStrength.key === strength.key
